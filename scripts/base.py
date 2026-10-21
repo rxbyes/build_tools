@@ -602,6 +602,19 @@ def get_ssh_base_url():
     return "git@github.com:ONLYOFFICE/"
   return cur_origin[:ind+12]
 
+def _retry_git(git_args, times=12, sleep_s=25, tolerant=False):
+  import time as _time
+  for attempt in range(times):
+    ret = cmd("git", git_args, True)
+    if (ret == 0):
+      return 0
+    print("[git] retry %d/%d for: %s" % (attempt + 1, times, " ".join(git_args)))
+    _time.sleep(sleep_s)
+  if (tolerant):
+    print("[git] tolerant failure after retries: " + " ".join(git_args))
+    return 0
+  return 1
+
 def git_update(repo, is_no_errors=False, is_current_dir=False, git_owner=""):
   print("[git] update: " + repo)
   owner = git_owner if git_owner else "ONLYOFFICE"
@@ -613,23 +626,23 @@ def git_update(repo, is_no_errors=False, is_current_dir=False, git_owner=""):
     folder = repo
   is_not_exit = False
   if not is_dir(folder):
-    retClone = cmd("git", ["clone", url, folder], is_no_errors)
+    retClone = _retry_git(["clone", url, folder])
     if retClone != 0:
       return
     is_not_exit = True
   old_cur = os.getcwd()
   os.chdir(folder)
-  cmd("git", ["fetch"], False if ("1" != config.option("update-light")) else True)
+  _retry_git(["fetch"], tolerant=True)
   if is_not_exit or ("1" != config.option("update-light")):
     retCheckout = cmd("git", ["checkout", "-f", config.option("branch")], True)
     if (retCheckout != 0):
       print("branch does not exist...")
       print("switching to master...")
       cmd("git", ["checkout", "-f", "master"])
-    cmd("git", ["submodule", "update", "--init", "--recursive"], True)
+    _retry_git(["submodule", "update", "--init", "--recursive"], tolerant=True)
   if (0 != config.option("branch").find("tags/")):
-    cmd("git", ["pull"], False if ("1" != config.option("update-light")) else True)
-    cmd("git", ["submodule", "update", "--recursive", "--remote"], True)
+    _retry_git(["pull"], tolerant=True)
+    _retry_git(["submodule", "update", "--recursive", "--remote"], tolerant=True)
   os.chdir(old_cur)
   return
 
