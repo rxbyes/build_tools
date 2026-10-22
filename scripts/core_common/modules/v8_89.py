@@ -110,7 +110,7 @@ def make_args(args, platform, is_64=True, is_debug=False):
   linux_clang = False
   if platform == "linux":
     if "" != config.option("sysroot"):
-      args_copy.append("use_sysroot=true")
+      args_copy.append("use_sysroot=false")
       args_copy.append("is_clang=false")
       if is_ubuntu_24_or_higher():
         args_copy.append("use_gold=false")
