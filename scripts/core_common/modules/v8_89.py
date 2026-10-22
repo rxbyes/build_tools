@@ -280,6 +280,7 @@ def make():
   gn_args = ["v8_static_library=true",
              "is_component_build=false",
              "v8_monolithic=true",
+             "v8_enable_sandbox=false",
              "v8_use_external_startup_data=false",
              "treat_warnings_as_errors=false"]
 
