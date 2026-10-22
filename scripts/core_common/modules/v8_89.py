@@ -64,16 +64,19 @@ def is_ubuntu_24_or_higher():
   return False
 
 def fix_ubuntu24():
-  #if not is_ubuntu_24_or_higher():
-  #  return
-
+  # [fork-fix] CIPD 不可达时 llvm-build 目录可能不存在；libstdc++.so.6 缺失时直接建软链
   if "" == config.option("sysroot"):
     return
 
   old_cur = os.getcwd()
-  os.chdir("third_party/llvm-build/Release+Asserts/lib")
-  base.cmd("mv", ["libstdc++.so.6", "libstdc++.so.6.old"])
-  base.cmd("ln", ["-s", "/usr/lib/x86_64-linux-gnu/libstdc++.so.6", "libstdc++.so.6"])
+  lib_dir = "third_party/llvm-build/Release+Asserts/lib"
+  if not base.is_dir(lib_dir):
+    base.create_dir(lib_dir)
+  os.chdir(lib_dir)
+  if base.is_exist("libstdc++.so.6"):
+    base.cmd("mv", ["libstdc++.so.6", "libstdc++.so.6.old"], True)
+  if not base.is_exist("libstdc++.so.6"):
+    base.cmd("ln", ["-s", "/usr/lib/x86_64-linux-gnu/libstdc++.so.6", "libstdc++.so.6"], True)
   os.chdir(old_cur)
   return
 
