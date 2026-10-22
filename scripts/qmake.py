@@ -104,7 +104,7 @@ def make(platform, project, qmake_config_addon="", is_no_errors=False):
       build_params.append(qt_dir + "/onlyoffice_qt.conf")
     if "1" == config.option("use-clang"):
       build_params.append("-spec")
-      build_params.append("linux-clang-libc++")
+      build_params.append("linux-clang")
 
     if "" != config.option("sysroot"):
       sysroot_path = config.option("sysroot_" + platform)

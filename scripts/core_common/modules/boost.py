@@ -119,7 +119,7 @@ def make():
       addon_compile = []
       if "1" == config.option("use-clang"):
         addon_config = ["--with-toolset=clang"]
-        addon_compile = ["cxxflags=-stdlib=libc++", "linkflags=-stdlib=libc++", "define=_LIBCPP_ENABLE_CXX17_REMOVED_UNARY_BINARY_FUNCTION"]
+        addon_compile = ["cxxflags=-include cstdint -D_GLIBCXX_USE_CXX11_ABI=0", "linkflags=-D_GLIBCXX_USE_CXX11_ABI=0"]
       base.cmd("./bootstrap.sh", ["--with-libraries=filesystem,system,date_time,regex"] + addon_config)
       base.cmd("./b2", ["headers"])
       base.cmd("./b2", ["--clean"])

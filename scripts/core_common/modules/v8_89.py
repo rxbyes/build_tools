@@ -282,7 +282,9 @@ def make():
              "v8_monolithic=true",
              "v8_enable_sandbox=false",
              "v8_use_external_startup_data=false",
-             "treat_warnings_as_errors=false"]
+             "treat_warnings_as_errors=false",
+             "use_sysroot=false",
+             "use_custom_libcxx=false"]
 
   if config.check_option("platform", "linux_64"):
     if config.option("sysroot") != "":
